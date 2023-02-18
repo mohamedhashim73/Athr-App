@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:simpleui/modules/screens/splash_screen/splash_screen.dart';
@@ -14,7 +13,8 @@ import 'layout/cubit/bloc_observer.dart';
 import 'layout/cubit/layout_cubit.dart';
 
 Future<void> firebaseBackgroundMessageHandler(RemoteMessage message) async {
-  debugPrint("Message while App is closed, message's data is : ${message.data}");
+  debugPrint(
+      "Message while App is closed, message's data is : ${message.data}");
 }
 
 Future<void> main() async {
@@ -28,21 +28,25 @@ Future<void> main() async {
   );
 
   // Todo: get token t use it on Firebase messaging FCM Rest API
-  if( firebase_messaging_token == null )
-    {
-      await CacheHelper.saveCacheData(key: 'firebase_messaging_token', val: await FirebaseMessaging.instance.getToken());
-    }
-  firebase_messaging_token = CacheHelper.getCacheData(key: 'firebase_messaging_token');
+  if (firebase_messaging_token == null) {
+    await CacheHelper.saveCacheData(
+        key: 'firebase_messaging_token',
+        val: await FirebaseMessaging.instance.getToken());
+  }
+  firebase_messaging_token =
+      CacheHelper.getCacheData(key: 'firebase_messaging_token');
   debugPrint("FirebaseMessagingToken is : $firebase_messaging_token");
 
   // Todo: receive messages from Firebase Messaging ( while app is open and user is in it )
   FirebaseMessaging.onMessage.listen((message) {
-    debugPrint("Message while App is open, message's data is : ${message.data}");
+    debugPrint(
+        "Message while App is open, message's data is : ${message.data}");
   });
 
   // Todo: Get message while app is open but user outside The Application
   FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    debugPrint("Message while App is open but user is outside, message's data is : ${message.data}");
+    debugPrint(
+        "Message while App is open but user is outside, message's data is : ${message.data}");
   });
 
   // Todo: Receive message on Background as app is closed
@@ -62,30 +66,30 @@ class MyApp extends StatelessWidget {
         designSize: const Size(360, 690),
         minTextAdapt: true,
         splitScreenMode: true,
-        builder: (context , child) {
+        builder: (context, child) {
           return MultiBlocProvider(
-            providers:
-            [
+            providers: [
               BlocProvider(create: (context) => SignCubit()),
-              BlocProvider(create: (context) => LayoutCubit()..getMyData()..getMyAllCommunitiesData()),
+              BlocProvider(
+                  create: (context) => LayoutCubit()..getMyData()..getMyAllCommunitiesData()),
             ],
             child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              theme: ThemeData(
-                appBarTheme: const AppBarTheme(
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: mainColor
+                debugShowCheckedModeBanner: false,
+                theme: ThemeData(
+                  appBarTheme: const AppBarTheme(
+                      elevation: 0,
+                      backgroundColor: Colors.transparent,
+                      foregroundColor: mainColor),
+                  // Todo: add u font here fontFamily: "Cairo",
+                  textTheme: Typography.englishLike2018.apply(
+                      fontSizeFactor: 1.sp,
+                      displayColor: Colors.black,
+                      bodyColor: Colors.black),
                 ),
-                // Todo: add u font here fontFamily: "Cairo",
-                textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp,displayColor: Colors.black,bodyColor: Colors.black),
-              ),
-              home: child,
-              routes: appRoutes
-            ),
+                home: child,
+                routes: appRoutes),
           );
         },
-        child: const SplashScreen()
-    );
+        child: const SplashScreen());
   }
 }
