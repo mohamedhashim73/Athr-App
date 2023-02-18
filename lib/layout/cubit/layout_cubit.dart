@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -133,7 +135,7 @@ class LayoutCubit extends Cubit<LayoutStates>{
         debugPrint("Community's image added successfully $imageUrl");
         // Todo: my own communities mean which I have created not joined
         await FirebaseFirestore.instance.collection('users').doc(userID ?? userData!.userID).collection('own_communities').add(model.toJson());
-        await FirebaseMessaging.instance.subscribeToTopic("${communityName}");
+        await FirebaseMessaging.instance.subscribeToTopic("${communityName}${userData!.userID??userID}");   // Todo: to get notifications when anyone else add a new post on this community
         await getMyAllCommunitiesData();
         emit(CreateMyCommunitySuccessfullyState());
       });
@@ -142,11 +144,11 @@ class LayoutCubit extends Cubit<LayoutStates>{
   }
 
   // Todo: delete my community using its ID
-  Future<void> deleteCommunity({required String communityID}) async {
+  Future<void> deleteCommunity({required String communityID,required String communityName}) async {
     emit(DeleteCommunityLoadingState());
     try {
-      await FirebaseFirestore.instance.collection('users').doc(userID ?? userData!.userID).collection('own_communities')
-          .doc(communityID).delete();
+      await FirebaseFirestore.instance.collection('users').doc(userID ?? userData!.userID).collection('own_communities').doc(communityID).delete();
+      await FirebaseMessaging.instance.unsubscribeFromTopic("${communityName}${userData!.userID??userID}");
       await getMyAllCommunitiesData();
       emit(DeleteCommunitySuccessfullyState());
     }
@@ -165,19 +167,19 @@ class LayoutCubit extends Cubit<LayoutStates>{
     );
     emit(AddToJoinedCommunityLoadingState());
     await FirebaseFirestore.instance.collection('users').doc(userID??userData!.userID).collection('joined_communities').doc(communityID).set(communityModel.toJson()).catchError((error) {emit(FailedToAddToJoinedCommunityState());});
-    await FirebaseMessaging.instance.subscribeToTopic("${communityModel.communityName!}");     // Todo: use it to get notifications after anyone create post on this community
+    await FirebaseMessaging.instance.subscribeToTopic("${communityModel.communityName!}${communityModel.authorID}");     // Todo: use it to get notifications after anyone create post on this community
     await getMyAllCommunitiesData();
     emit(AddToJoinedCommunitySuccessfullyState());
   }
 
   // Todo: add community to joined communities (( I will get The ID for Community throw communitiesID variable when I click on it))
-  Future<void> leaveCommunity({required String communityID,required String communityName}) async {
+  Future<void> leaveCommunity({required String communityID,required String communityName,required String communityAuthorID}) async {
     emit(LeaveCommunityLoadingState());
     try{
       await FirebaseFirestore.instance.collection('users').doc(userID??userData!.userID)
           .collection('joined_communities').doc(communityID).delete();
       joinedCommunitiesID.remove(communityID);  // Todo: to delete Community ID from Set(joinedCommunitiesID)
-      await FirebaseMessaging.instance.unsubscribeFromTopic("${communityName}");
+      await FirebaseMessaging.instance.unsubscribeFromTopic("${communityName}${communityAuthorID}");
       await getMyAllCommunitiesData();
       emit(LeaveCommunitySuccessfullyState());
     }
@@ -566,6 +568,7 @@ class LayoutCubit extends Cubit<LayoutStates>{
 
   // Todo: send a notification for all users who join to a specific community after adding a post on this community
   Future<void> sendNotifyAfterAddPost(String communityID,String communityAuthorID,String communityName,String communityImage) async {
+    String topicName = "${communityName}${communityAuthorID}";     // Todo: to avoid create more than one community with the same name
     await http.post(
         Uri.parse("https://fcm.googleapis.com/fcm/send"),
         headers: {
@@ -576,7 +579,7 @@ class LayoutCubit extends Cubit<LayoutStates>{
         body:{
           {
             // Todo: I used communityID as The Topic that users subscribe to it.
-            "to": "/topics/$communityName",  // Todo: receiver token == firebase_messaging_token for community's author
+            "to": "/topics/$topicName",  // Todo: receiver token == firebase_messaging_token for community's author
             "notification": {
               "title": "New Post",
               "body": "${userData!.userName} add a new Post on %$communityName Community",

@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:simpleui/layout/cubit/layout_cubit.dart';
 import 'package:simpleui/models/community_model.dart';
-import 'package:simpleui/models/post_model.dart';
-import 'package:simpleui/modules/screens/comments_view/comments_screen.dart';
 import 'package:simpleui/modules/screens/community/community_details_screen.dart';
-import 'package:simpleui/modules/screens/likes_screen/likesViewScreen.dart';
-import 'package:simpleui/modules/screens/posts/edit_post.dart';
 import 'package:simpleui/modules/widgets/alert_dialog_widget.dart';
 import 'package:simpleui/shared/constants.dart';
 
@@ -30,7 +26,7 @@ class CommunityWidget extends StatelessWidget{
           contentPadding: const EdgeInsets.all(0),
           leading: CircleAvatar(backgroundImage: NetworkImage(model.authorImage!),),
           title: Text(model.communityName!,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17.sp),),
-          subtitle: Text(model.communityDate!),
+          subtitle: Text(model.communityDate!,style: TextStyle(color: Colors.grey),),
           trailing: GestureDetector(
             onTap: ()
             {
@@ -46,8 +42,8 @@ class CommunityWidget extends StatelessWidget{
                         async
                         {
                           model.authorID == userID ?
-                          await cubit.deleteCommunity(communityID: communityID) :
-                          await cubit.leaveCommunity(communityID: communityID,communityName: model.communityName!);
+                          await cubit.deleteCommunity(communityID: communityID, communityName: model.communityName!) :
+                          await cubit.leaveCommunity(communityID: communityID,communityName: model.communityName!, communityAuthorID: model.authorID!);
                         },
                       ),
                     ],

@@ -26,7 +26,7 @@ class PostWidget extends StatelessWidget{
           contentPadding: const EdgeInsets.all(0),
           leading: CircleAvatar(backgroundImage: NetworkImage(model.postMakerImage.toString()),),
           title: Text(model.communityName.toString(),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17.sp),),
-          subtitle: Text("${model.postMakerName.toString()}, ${model.postDate.toString()}",style: Theme.of(context).textTheme.caption,),
+          subtitle: Text("${model.postMakerName.toString()}, ${model.postDate.toString()}",style: TextStyle(color: Colors.grey),),
           trailing : GestureDetector(
             onTap: ()
             {
