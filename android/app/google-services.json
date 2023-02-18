@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "430850140619",
+    "project_id": "athr-f038e",
+    "storage_bucket": "athr-f038e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:430850140619:android:546cb43628cca6d92eee4e",
+        "android_client_info": {
+          "package_name": "com.example.simpleui"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "430850140619-msia4melkvffkn91b2tu26e7gco78eo2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA39nTKrvZTVMkql4oJsB1Bf3p5viYCdBs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "430850140619-msia4melkvffkn91b2tu26e7gco78eo2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
